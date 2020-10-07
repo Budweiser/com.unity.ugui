@@ -294,14 +294,16 @@ namespace UnityEngine.UI
         /// - canvas.worldCanvas if not null
         /// - Camera.main.
         /// </returns>
+        [NonSerialized] private Camera targetCamera;
         public override Camera eventCamera
         {
             get
             {
+                if (targetCamera != null) return targetCamera;
                 if (canvas.renderMode == RenderMode.ScreenSpaceOverlay || (canvas.renderMode == RenderMode.ScreenSpaceCamera && canvas.worldCamera == null))
                     return null;
-
-                return canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+                targetCamera = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+                return targetCamera;
             }
         }
 

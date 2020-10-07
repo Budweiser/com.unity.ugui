@@ -291,7 +291,8 @@ namespace UnityEngine.UI
 
         protected override void OnBeforeTransformParentChanged()
         {
-            GraphicRegistry.UnregisterGraphicForCanvas(canvas, this);
+            if (raycastTarget)
+                GraphicRegistry.UnregisterGraphicForCanvas(canvas, this);
             LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
         }
 
@@ -305,7 +306,8 @@ namespace UnityEngine.UI
                 return;
 
             CacheCanvas();
-            GraphicRegistry.RegisterGraphicForCanvas(canvas, this);
+            if (raycastTarget)
+                GraphicRegistry.RegisterGraphicForCanvas(canvas, this);
             SetAllDirty();
         }
 
@@ -474,7 +476,8 @@ namespace UnityEngine.UI
         {
             base.OnEnable();
             CacheCanvas();
-            GraphicRegistry.RegisterGraphicForCanvas(canvas, this);
+            if (raycastTarget)
+                GraphicRegistry.RegisterGraphicForCanvas(canvas, this);
 
 #if UNITY_EDITOR
             GraphicRebuildTracker.TrackGraphic(this);
@@ -493,7 +496,8 @@ namespace UnityEngine.UI
 #if UNITY_EDITOR
             GraphicRebuildTracker.UnTrackGraphic(this);
 #endif
-            GraphicRegistry.UnregisterGraphicForCanvas(canvas, this);
+            if (raycastTarget)
+                GraphicRegistry.UnregisterGraphicForCanvas(canvas, this);
             CanvasUpdateRegistry.UnRegisterCanvasElementForRebuild(this);
 
             if (canvasRenderer != null)
@@ -528,11 +532,12 @@ namespace UnityEngine.UI
 
             if (currentCanvas != m_Canvas)
             {
-                GraphicRegistry.UnregisterGraphicForCanvas(currentCanvas, this);
+                if (raycastTarget)
+                    GraphicRegistry.UnregisterGraphicForCanvas(currentCanvas, this);
 
                 // Only register if we are active and enabled as OnCanvasHierarchyChanged can get called
                 // during object destruction and we dont want to register ourself and then become null.
-                if (IsActive())
+                if (IsActive() && raycastTarget)
                     GraphicRegistry.RegisterGraphicForCanvas(canvas, this);
             }
         }
